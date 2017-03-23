@@ -31,6 +31,8 @@ def _get_data(patch_number):
 
 def get_response(patch_number, already_linked=True):
     data = _get_data(patch_number)
+    if not data:
+        return None
     pieces = []
     if already_linked:
         pieces.append('patch %d' % patch_number)
@@ -74,4 +76,5 @@ def linkify_patches(bot, trigger):
 
     for patch_number in patch_numbers:
         resp = get_response(patch_number, already_linked=(REVIEW_SERVER in trigger.match.string))
-        bot.say(resp)
+        if resp:
+            bot.say(resp)
