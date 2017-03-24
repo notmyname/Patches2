@@ -32,7 +32,7 @@ def _get_data(patch_number):
 def get_response(patch_number, already_linked=True):
     data = _get_data(patch_number)
     if not data:
-        return None
+        return 'No data found for patch %d' % patch_number
     pieces = []
     if already_linked:
         pieces.append('patch %d' % patch_number)
@@ -63,8 +63,9 @@ def get_response(patch_number, already_linked=True):
     return ' - '.join(pieces)
 
 #TODO: be able to mix the forms
+#      maybe have a general .* regex and do our own parsing a la Patches v1?
 @sopel.module.rule(r'https://review.openstack.org(?:/#/c)?/(\d+)/?')
-@sopel.module.rule(r'(?:p(?:atch)?\s+){1}#?(\d+)')
+@sopel.module.rule(r'.*?(?:p(?:atch)?\s+){1}#?(\d+).*?')
 def linkify_patches(bot, trigger):
     if trigger.nick in KNOWN_BOTS:
         return
