@@ -79,3 +79,9 @@ def linkify_patches(bot, trigger):
         resp = get_response(patch_number, already_linked=(REVIEW_SERVER in trigger.match.string))
         if resp:
             bot.say(resp)
+
+
+@sopel.module.rule(r'#startmeeting infra')
+def bail_on_infra_meeting(bot, trigger):
+    if 'meeting' in trigger.sender or trigger.sender == '#clouddevs':
+        bot.part(trigger.sender, msg="I am leaving. No need to kick me out.")
