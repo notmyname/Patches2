@@ -49,14 +49,14 @@ def tim_time_calc(patch_number):
 
 #TODO: memoize this
 def _get_data(patch_number):
-    resp = requests.get('%s/changes/%d' % (REVIEW_SERVER, patch_number),
+    resp = requests.get('%s/changes/%d/detail' % (REVIEW_SERVER, patch_number),
                         headers={'Accept': 'application/json'},
                         stream=True)
     if resp.status_code != 200:
         return None  # Error; patch does not exist?
 
-    if int(resp.headers.get('Content-Length', '1024')) >= 1024:
-        return None  # Response too long; this should be real small
+    # if int(resp.headers.get('Content-Length', '1024')) >= 1024:
+    #     return None  # Response too long; this should be real small
 
     lines = resp.iter_lines()
     next(lines)  # Throw out )]}' line
@@ -98,12 +98,18 @@ def get_response(patch_number, already_linked=True):
             pieces.append(subject)
         else:
             pieces.append('%s (%s)' % (subject, status))
-    cpu_time, wall_time = tim_time_calc(patch_number)
-    if any(cpu_time + wall_time):
-        # time_message = '%2dh %2dm %2ds cpu' % cpu_time
-        # pieces.append(time_message)
-        time_message = '%dh %dm %ds spent in CI' % wall_time
-        pieces.append(time_message)
+
+    patch_sets = max(x['_revision_number'] for x in data['messages'])
+    if patch_sets == 1:
+        pieces.append('1 patch set')
+    else:
+        pieces.append('%d patch sets' % patch_sets)
+    # cpu_time, wall_time = tim_time_calc(patch_number)
+    # if any(cpu_time + wall_time):
+    #     # time_message = '%2dh %2dm %2ds cpu' % cpu_time
+    #     # pieces.append(time_message)
+    #     time_message = '%dh %dm %ds spent in CI' % wall_time
+    #     pieces.append(time_message)
     return ' - '.join(pieces)
 
 #TODO: be able to mix the forms
