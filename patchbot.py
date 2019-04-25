@@ -3,7 +3,7 @@ import requests
 import json
 import re
 
-REVIEW_SERVER = 'https://review.openstack.org'
+REVIEW_SERVER = 'https://review.opendev.org'
 KNOWN_BOTS = set([
     'openstack',
     'openstackgerrit',
@@ -24,7 +24,7 @@ def tim_time_calc(patch_number):
         h, m = divmod(m, 60)
         return h, m, s
 
-    c = requests.get('https://review.openstack.org/changes/%s/detail' % patch_number).content
+    c = requests.get('https://review.opendev.org/changes/%s/detail' % patch_number).content
     d = json.loads(c[4:])
     m = [(x['date'], x['message']) for x in d['messages']
          if x.get('author', {}).get('username') in ('zuul', 'jenkins')]
@@ -115,6 +115,7 @@ def get_response(patch_number, already_linked=True):
 #TODO: be able to mix the forms
 #      maybe have a general .* regex and do our own parsing a la Patches v1?
 @sopel.module.rule(r'.*?https://review.openstack.org(?:/#/c)?/(\d+)/?.*?')
+@sopel.module.rule(r'.*?https://review.opendev.org(?:/#/c)?/(\d+)/?.*?')
 @sopel.module.rule(r'(?:.*?\s+?)??(?:p(?:atch)?\s+){1}#?(\d+).*?')
 def linkify_patches(bot, trigger):
     if trigger.nick in KNOWN_BOTS:
