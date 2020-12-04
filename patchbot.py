@@ -117,6 +117,7 @@ def get_response(patch_number, already_linked=True):
 @sopel.module.rule(r'.*?https://review.openstack.org(?:/#/c)?/(\d+)/?.*?')
 @sopel.module.rule(r'.*?https://review.opendev.org(?:/#/c)?/(\d+)/?.*?')
 @sopel.module.rule(r'(?:.*?\s+?)??(?:p(?:atch)?\s+){1}#?(\d+).*?')
+@sopel.module.rule(r'.*?https://review.opendev.org/c/[^/]+/[^/]+/\+/(\d+)/?.*?')
 def linkify_patches(bot, trigger):
     if trigger.nick in KNOWN_BOTS:
         return
